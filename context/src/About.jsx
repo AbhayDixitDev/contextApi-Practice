@@ -1,7 +1,14 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Container, Row, Col, Card, ListGroup } from 'react-bootstrap';
+import { ProfileContext } from './contextCount';
 
 const About = () => {
+  const { profile } = useContext(ProfileContext);
+
+  if (!profile) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <Container className="my-5">
       <Row>
@@ -13,22 +20,20 @@ const About = () => {
         <Col md={6}>
           <Card className="mb-4">
             <Card.Body>
-              <Card.Title>ABHAY DIXIT</Card.Title>
-              <Card.Subtitle className="mb-2 text-muted">MERN Full Stack Developer</Card.Subtitle>
+              <Card.Title>{profile.name}</Card.Title>
+              <Card.Subtitle className="mb-2 text-muted">{profile.title}</Card.Subtitle>
               <Card.Text>
-                Location: BHOPAL (Willing to relocate)<br />
-                Email: Abhaydixit.dev@gmail.com<br />
-                Contact: +91 7017709865<br />
-                <a href="https://linkedin.com/in/AbhayDixitDev" target="_blank" rel="noopener noreferrer">LinkedIn</a> | <a href="https://github.com/AbhayDixitDev" target="_blank" rel="noopener noreferrer">GitHub</a>
+                Location: {profile.location}<br />
+                Email: {profile.email}<br />
+                Contact: {profile.contact}<br />
+                <a href={`https://${profile.linkedin}`} target="_blank" rel="noopener noreferrer">LinkedIn</a> | <a href={`https://${profile.github}`} target="_blank" rel="noopener noreferrer">GitHub</a>
               </Card.Text>
             </Card.Body>
           </Card>
           <Card className="mb-4">
             <Card.Body>
               <Card.Title>Summary</Card.Title>
-              <Card.Text>
-                A highly driven web developer with a strong foundation in both frontend and backend development, committed to staying ahead of the curve in the IT sector, eager to collaborate on cutting-edge projects and drive success and innovation in a dynamic organization.
-              </Card.Text>
+              <Card.Text>{profile.summary}</Card.Text>
             </Card.Body>
           </Card>
         </Col>
@@ -37,12 +42,21 @@ const About = () => {
             <Card.Body>
               <Card.Title>Technical Skills</Card.Title>
               <ListGroup variant="flush">
-                <ListGroup.Item>Programming Languages: C++, JavaScript</ListGroup.Item>
-                <ListGroup.Item>Front-End: React.js, Tailwind CSS, Bootstrap-5, HTML5</ListGroup.Item>
-                <ListGroup.Item>Back-End: Node.js, Express</ListGroup.Item>
-                <ListGroup.Item>Database: MongoDB, Database Design</ListGroup.Item>
-                <ListGroup.Item>Tools: Git, GitHub, VS Code, Net Beans IDE, JIRA</ListGroup.Item>
-                <ListGroup.Item>API Development: Axios</ListGroup.Item>
+                {Object.entries(profile.technicalSkills).map(([category, skills]) => (
+                  <ListGroup.Item key={category}>
+                    <strong>{category}:</strong> {skills.join(', ')}
+                  </ListGroup.Item>
+                ))}
+              </ListGroup>
+            </Card.Body>
+          </Card>
+          <Card className="mb-4">
+            <Card.Body>
+              <Card.Title>Soft Skills</Card.Title>
+              <ListGroup variant="flush">
+                {profile.softSkills.map((skill, index) => (
+                  <ListGroup.Item key={index}>{skill}</ListGroup.Item>
+                ))}
               </ListGroup>
             </Card.Body>
           </Card>
@@ -53,12 +67,19 @@ const About = () => {
           <Card className="mb-4">
             <Card.Body>
               <Card.Title>Projects</Card.Title>
-              <Card.Text>
-                <strong>Flight Booking System Website</strong><br />
-                Technologies: HTML, CSS, JavaScript, JSON, Vercel, VS Code, GitHub<br />
-                <strong>E-Voting Web Application</strong><br />
-                Technologies: HTML, CSS, JavaScript, PHP, SQL, XAMPP Server
-              </Card.Text>
+              {profile.projects.map((project, index) => (
+                <Card.Text key={index}>
+                  <strong>{project.name}</strong><br />
+                  Technologies: {project.technologies.join(', ')}<br />
+                  Description: {project.description}<br />
+                  Responsibilities:
+                  <ul>
+                    {project.responsibilities.map((resp, i) => (
+                      <li key={i}>{resp}</li>
+                    ))}
+                  </ul>
+                </Card.Text>
+              ))}
             </Card.Body>
           </Card>
         </Col>
@@ -67,8 +88,33 @@ const About = () => {
             <Card.Body>
               <Card.Title>Education</Card.Title>
               <ListGroup variant="flush">
-                <ListGroup.Item>B. Tech. in Information Technology, University Institute of Technology RGPV, Bhopal</ListGroup.Item>
-                <ListGroup.Item>Polytechnic Diploma in Computer Science, S.R. Govt. Polytechnic College, Sagar</ListGroup.Item>
+                {profile.education.map((edu, index) => (
+                  <ListGroup.Item key={index}>{edu.degree}, {edu.institution}</ListGroup.Item>
+                ))}
+              </ListGroup>
+            </Card.Body>
+          </Card>
+          <Card className="mb-4">
+            <Card.Body>
+              <Card.Title>Certifications</Card.Title>
+              <ListGroup variant="flush">
+                {profile.certifications.map((cert, index) => (
+                  <ListGroup.Item key={index}>
+                    {cert.name}, {cert.issuer}<br />
+                    {cert.date && `Date: ${cert.date}`}<br />
+                    Skills: {cert.skills.join(', ')}
+                  </ListGroup.Item>
+                ))}
+              </ListGroup>
+            </Card.Body>
+          </Card>
+          <Card className="mb-4">
+            <Card.Body>
+              <Card.Title>Languages</Card.Title>
+              <ListGroup variant="flush">
+                {profile.languages.map((lang, index) => (
+                  <ListGroup.Item key={index}>{lang}</ListGroup.Item>
+                ))}
               </ListGroup>
             </Card.Body>
           </Card>

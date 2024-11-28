@@ -1,0 +1,66 @@
+{
+    "users": [
+        {
+            "id": 1,
+            "name": "ABHAY DIXIT",
+            "email": "Abhaydixit.dev@gmail.com",
+            "age": null,
+            "occupation": "MERN Full Stack Developer",
+            "skills": ["C++", "JavaScript", "React js", "Tailwind CSS", "BootStrap-5", "HTML5", "Node.js", "Express", "MongoDB"],
+            "address": {
+                "street": null,
+                "city": "BHOPAL",
+                "country": null
+            },
+            "projects": [
+                {
+                    "name": "Flight Booking System Website",
+                    "description": "Developed a flight booking system simulating a real-world scenario for an online travel agency.",
+                    "technologies": ["HTML", "CSS", "JavaScript", "JSON", "Vercel", "VS Code", "GitHub"]
+                },
+                {
+                    "name": "E-Voting Web Application",
+                    "description": "Developed a functional Server-Side E-voting web application, simulating a secure voting system.",
+                    "technologies": ["HTML", "CSS", "JavaScript", "PHP", "SQL", "XAMPP Server"]
+                }
+            ],
+            "education": [
+                {
+                    "degree": "B. Tech. in Information Technology",
+                    "university": "University Institute of Technology RGPV, Bhopal, Madhya Pradesh",
+                    "graduationYear": null
+                },
+                {
+                    "degree": "Polytechnic Diploma in Computer Science",
+                    "university": "S.R. Govt. Polytechnic College, Sagar, Madhya Pradesh",
+                    "graduationYear": null
+                }
+            ],
+            "languages": ["English", "Hindi"],
+            "certifications": [
+                {
+                    "name": "MERN Full Stack Developer",
+                    "issuer": "CYBROM Technologies Pvt. Ltd., Bhopal",
+                    "date": "April 2024 - Present"
+                },
+                {
+                    "name": "Global Service Desk Certificate",
+                    "issuer": "NIIT Foundation & DXC Technology"
+                }
+            ],
+            "contact": "+91 7017709865",
+            "linkedin": "linkedin.com/in/AbhayDixitDev",
+            "github": "github.com/AbhayDixitDev",
+            "summary": "A highly driven web developer with a strong foundation in both frontend and backend development, committed to staying ahead of the curve in the IT sector, eager to collaborate on cutting-edge projects and drive success and innovation in a dynamic organization.",
+            "technicalSkills": {
+                "programmingLanguages": ["C++", "JavaScript"],
+                "frontEnd": ["React js", "Tailwind CSS", "BootStrap-5", "HTML5"],
+                "backEnd": ["Node.js", "Express"],
+                "database": ["MongoDB", "Database Design"],
+                "tools": ["Git", "GitHub", "VS Code", "Net Beans IDE", "JIRA"],
+                "api": ["Axios"]
+            },
+            "softSkills": ["Effective Communication", "Problem-Solving", "Teamwork"]
+        }
+    ]
+}

@@ -10,10 +10,11 @@ function App() {
     <Router>
       <NavigationBar />
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Resume />} />
+        <Route path="/resume" element={<Home />} />
+
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/resume" element={<Resume />} />
       </Routes>
     </Router>
   )
