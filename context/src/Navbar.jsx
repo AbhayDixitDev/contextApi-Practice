@@ -14,6 +14,7 @@ const NavigationBar = () => {
             <Nav.Link as={Link} to="/resume">Resume</Nav.Link>
             <Nav.Link as={Link} to="/about">About</Nav.Link>
             <Nav.Link as={Link} to="/contact">Contact</Nav.Link>
+            <a href="mailto:Abhaydixit@gmail.com">Send Mail</a>
           </Nav>
         </Navbar.Collapse>
       </Container>

@@ -4,69 +4,61 @@ const ProfileContext = createContext()
 
 const ProfileProvider = ({ children }) => {
     const [profile, setProfile] = useState({
-        name: "ABHAY DIXIT",
-        title: "MERN Full Stack Developer",
-        location: "BHOPAL",
-        email: "Abhaydixit.dev@gmail.com",
-        contact: "+91 7017709865",
-        linkedin: "linkedin.com/in/AbhayDixitDev",
-        github: "github.com/AbhayDixitDev",
-        summary: "A highly driven web developer with a strong foundation in both frontend and backend development, committed to staying ahead of the curve in the IT sector, eager to collaborate on cutting-edge projects and drive success and innovation in a dynamic organization.",
+        name: "",
+        title: "",
+        location: "",
+        email: "",
+        contact: "",
+        linkedin: "",
+        github: "",
+        summary: "",
         projects: [
             {
-                name: "Flight Booking System Website",
-                technologies: ["HTML", "CSS", "JavaScript", "JSON", "Vercel", "VS Code", "GitHub"],
-                description: "Developed a flight booking system simulating a real-world scenario for an online travel agency.",
-                responsibilities: [
-                    "Developed features for flight search, booking, history, and an admin panel",
-                    "Created a responsive website using HTML, CSS, and JavaScript",
-                    "Used GitHub for version control and Vercel for deployment"
-                ]
+                name: "",
+                technologies: [],
+                description: "",
+                responsibilities: []
             },
             {
-                name: "E-Voting Web Application",
-                technologies: ["HTML", "CSS", "JavaScript", "PHP", "SQL", "XAMPP Server"],
-                description: "Developed a functional Server-Side E-voting web application, simulating a secure voting system.",
-                responsibilities: [
-                    "Developed secure PHP/SQL applications",
-                    "Used JavaScript to add dynamic features to the client side",
-                    "Employed XAMPP Server for testing and deployment"
-                ]
+                name: "",
+                technologies: [],
+                description: "",
+                responsibilities: []
             }
         ],
         certifications: [
             {
-                name: "MERN Full Stack Developer",
-                issuer: "CYBROM Technologies Pvt. Ltd., Bhopal",
-                date: "April 2024 - Present",
-                skills: ["Front-End Expert", "Tech Savvy", "Problem-Solver"]
+                name: "",
+                issuer: "",
+                date: "",
+                skills: []
             },
             {
-                name: "Global Service Desk Certificate",
-                issuer: "NIIT Foundation & DXC Technology",
-                skills: ["Client Focus", "Efficient Problem-Solving", "Collaborative & Adaptable"]
+                name: "",
+                issuer: "",
+                skills: []
             }
         ],
         technicalSkills: {
-            programmingLanguages: ["C++", "JavaScript"],
-            frontEnd: ["React js", "Tailwind CSS", "BootStrap-5", "HTML5"],
-            backEnd: ["Node.js", "Express"],
-            database: ["MongoDB", "Database Design"],
-            tools: ["Git", "GitHub", "VS Code", "Net Beans IDE", "JIRA"],
-            api: ["Axios"]
+            programmingLanguages: [],
+            frontEnd: [],
+            backEnd: [],
+            database: [],
+            tools: [],
+            api: []
         },
-        softSkills: ["Effective Communication", "Problem-Solving", "Teamwork"],
+        softSkills: [],
         education: [
             {
-                degree: "B. Tech. in Information Technology",
-                institution: "University Institute of Technology RGPV, Bhopal, Madhya Pradesh"
+                degree: "",
+                institution: ""
             },
             {
-                degree: "Polytechnic Diploma in Computer Science",
-                institution: "S.R. Govt. Polytechnic College, Sagar, Madhya Pradesh"
+                degree: "",
+                institution: ""
             }
         ],
-        languages: ["English (Proficient)", "Hindi (Excellent)"]
+        languages: []
     })
 
     return (

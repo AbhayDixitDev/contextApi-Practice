@@ -1,18 +1,63 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { ProfileContext } from './contextCount';
+import axios from 'axios';
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
 
 const Resume = () => {
   const { profile, setProfile } = useContext(ProfileContext);
   const [formData, setFormData] = useState(profile);
+  const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    setFormData(profile);
+  }, [profile]);
+
+  const validateForm = () => {
+    let newErrors = {};
+    const requiredFields = ['name', 'title', 'location', 'email', 'contact', 'linkedin', 'github', 'summary'];
+    requiredFields.forEach(field => {
+      if (!formData[field]?.trim()) newErrors[field] = `${field.charAt(0).toUpperCase() + field.slice(1)} is required`;
+    });
+    if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Email is invalid";
+
+    ['projects', 'certifications', 'education'].forEach(section => {
+      if (!formData[section]?.length) newErrors[section] = `At least one ${section.slice(0, -1)} is required`;
+    });
+
+    formData.projects?.forEach((project, index) => {
+      ['name', 'description'].forEach(field => {
+        if (!project[field]?.trim()) newErrors[`projects[${index}].${field}`] = `Project ${field} is required`;
+      });
+      if (!project.technologies?.length) newErrors[`projects[${index}].technologies`] = "At least one technology is required";
+    });
+
+    formData.education?.forEach((edu, index) => {
+      ['degree', 'institution'].forEach(field => {
+        if (!edu[field]?.trim()) newErrors[`education[${index}].${field}`] = `${field.charAt(0).toUpperCase() + field.slice(1)} is required`;
+      });
+    });
+
+    Object.entries(formData.technicalSkills || {}).forEach(([category, skills]) => {
+      if (!skills?.length) {
+        newErrors[`technicalSkills.${category}`] = `At least one ${category} skill is required`;
+      }
+    });
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleChange = (e, section, index, field) => {
     const { name, value } = e.target;
     setFormData(prev => {
       if (section) {
-        const updatedSection = [...prev[section]];
+        const updatedSection = [...(prev[section] || [])];
         if (index !== undefined) {
-          updatedSection[index] = { ...updatedSection[index], [field]: value };
+          if (field === 'technologies' || field === 'skills') {
+            updatedSection[index] = { ...updatedSection[index], [field]: value.split(',').map(item => item.trim()) };
+          } else {
+            updatedSection[index] = { ...updatedSection[index], [field]: value };
+          }
         } else {
           updatedSection[name] = value;
         }
@@ -22,191 +67,195 @@ const Resume = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setProfile(formData);
-    alert('Resume saved successfully!');
+    if (validateForm()) {
+      try {
+        const response = await axios.post('https://data-resume.vercel.app/users', formData);
+        setProfile(response.data);
+        alert('Resume saved successfully!');
+      } catch (error) {
+        console.error('Error saving resume:', error);
+        alert('Failed to save resume. Please try again.');
+      }
+    }
   };
 
   return (
-    <Container className="mt-5">
-
+    <Container className="my-5">
       <Form onSubmit={handleSubmit}>
-      <Button 
-        variant="primary" 
-        type="submit" 
-        style={{
-          position: 'fixed',
-          top: '5rem',
-          right: '7rem',
-          zIndex: 1000,
-          float: 'right',
-          animation: 'wave 2s infinite'
-        }}
-      >
-        <style>
-          {`
-            @keyframes wave {
-              0%, 100% { transform: translateY(0); }
-              50% { transform: translateY(-10px); }
-            }
-          `}
-        </style>
-        Save Resume
-      </Button>
+      <Button variant="primary" type="submit" className="mt-4">Save Resume</Button>
 
+        <h2 className="mb-4">Personal Information</h2>
         <Row>
           <Col md={6}>
             <Form.Group className="mb-3">
-              <Form.Label>Name</Form.Label>
-              <Form.Control type="text" name="name" value={formData.name} onChange={handleChange} />
+              <Form.Control name="name" value={formData.name || ''} onChange={handleChange} placeholder="Name" isInvalid={!!errors.name} />
+              <Form.Control.Feedback type="invalid">{errors.name}</Form.Control.Feedback>
             </Form.Group>
           </Col>
           <Col md={6}>
             <Form.Group className="mb-3">
-              <Form.Label>Title</Form.Label>
-              <Form.Control type="text" name="title" value={formData.title} onChange={handleChange} />
+              <Form.Control name="title" value={formData.title || ''} onChange={handleChange} placeholder="Title" isInvalid={!!errors.title} />
+              <Form.Control.Feedback type="invalid">{errors.title}</Form.Control.Feedback>
             </Form.Group>
           </Col>
         </Row>
-
         <Row>
           <Col md={6}>
             <Form.Group className="mb-3">
-              <Form.Label>Location</Form.Label>
-              <Form.Control type="text" name="location" value={formData.location} onChange={handleChange} />
+              <Form.Control name="email" value={formData.email || ''} onChange={handleChange} placeholder="Email" isInvalid={!!errors.email} />
+              <Form.Control.Feedback type="invalid">{errors.email}</Form.Control.Feedback>
             </Form.Group>
           </Col>
           <Col md={6}>
             <Form.Group className="mb-3">
-              <Form.Label>Email</Form.Label>
-              <Form.Control type="email" name="email" value={formData.email} onChange={handleChange} />
+              <Form.Control name="contact" value={formData.contact || ''} onChange={handleChange} placeholder="Contact" isInvalid={!!errors.contact} />
+              <Form.Control.Feedback type="invalid">{errors.contact}</Form.Control.Feedback>
             </Form.Group>
           </Col>
         </Row>
-
         <Row>
           <Col md={4}>
             <Form.Group className="mb-3">
-              <Form.Label>Contact</Form.Label>
-              <Form.Control type="text" name="contact" value={formData.contact} onChange={handleChange} />
+              <Form.Control name="location" value={formData.location || ''} onChange={handleChange} placeholder="Location" isInvalid={!!errors.location} />
+              <Form.Control.Feedback type="invalid">{errors.location}</Form.Control.Feedback>
             </Form.Group>
           </Col>
           <Col md={4}>
             <Form.Group className="mb-3">
-              <Form.Label>LinkedIn</Form.Label>
-              <Form.Control type="text" name="linkedin" value={formData.linkedin} onChange={handleChange} />
+              <Form.Control name="linkedin" value={formData.linkedin || ''} onChange={handleChange} placeholder="LinkedIn" isInvalid={!!errors.linkedin} />
+              <Form.Control.Feedback type="invalid">{errors.linkedin}</Form.Control.Feedback>
             </Form.Group>
           </Col>
           <Col md={4}>
             <Form.Group className="mb-3">
-              <Form.Label>GitHub</Form.Label>
-              <Form.Control type="text" name="github" value={formData.github} onChange={handleChange} />
+              <Form.Control name="github" value={formData.github || ''} onChange={handleChange} placeholder="GitHub" isInvalid={!!errors.github} />
+              <Form.Control.Feedback type="invalid">{errors.github}</Form.Control.Feedback>
             </Form.Group>
           </Col>
         </Row>
 
+        <h2 className="mt-5 mb-4">Summary</h2>
         <Form.Group className="mb-3">
-          <Form.Label>Professional Summary</Form.Label>
-          <Form.Control as="textarea" rows={3} name="summary" value={formData.summary} onChange={handleChange} />
+          <Form.Control as="textarea" rows={3} name="summary" value={formData.summary || ''} onChange={handleChange} placeholder="Professional summary" isInvalid={!!errors.summary} />
+          <Form.Control.Feedback type="invalid">{errors.summary}</Form.Control.Feedback>
         </Form.Group>
 
-        <h3>Projects</h3>
-        {formData.projects.map((project, index) => (
+        <h2 className="mt-5 mb-4">Projects</h2>
+        {formData.projects?.map((project, index) => (
           <Row key={index} className="mb-3">
             <Col md={4}>
-              <Form.Group>
-                <Form.Label>Project Name</Form.Label>
-                <Form.Control type="text" value={project.name} onChange={(e) => handleChange(e, 'projects', index, 'name')} />
-              </Form.Group>
+              <Form.Control value={project.name || ''} onChange={(e) => handleChange(e, 'projects', index, 'name')} placeholder="Project name" isInvalid={!!errors[`projects[${index}].name`]} />
+              <Form.Control.Feedback type="invalid">{errors[`projects[${index}].name`]}</Form.Control.Feedback>
             </Col>
             <Col md={4}>
-              <Form.Group>
-                <Form.Label>Description</Form.Label>
-                <Form.Control type="text" value={project.description} onChange={(e) => handleChange(e, 'projects', index, 'description')} />
-              </Form.Group>
+              <Form.Control value={project.description || ''} onChange={(e) => handleChange(e, 'projects', index, 'description')} placeholder="Description" isInvalid={!!errors[`projects[${index}].description`]} />
+              <Form.Control.Feedback type="invalid">{errors[`projects[${index}].description`]}</Form.Control.Feedback>
             </Col>
             <Col md={4}>
-              <Form.Group>
-                <Form.Label>Technologies</Form.Label>
-                <Form.Control type="text" value={project.technologies.join(', ')} onChange={(e) => handleChange(e, 'projects', index, 'technologies')} />
-              </Form.Group>
+              <Form.Control value={project.technologies ? project.technologies.join(', ') : ''} onChange={(e) => handleChange(e, 'projects', index, 'technologies')} placeholder="Technologies (comma-separated)" isInvalid={!!errors[`projects[${index}].technologies`]} />
+              <Form.Control.Feedback type="invalid">{errors[`projects[${index}].technologies`]}</Form.Control.Feedback>
             </Col>
           </Row>
         ))}
+        {errors.projects && <div className="text-danger">{errors.projects}</div>}
 
-        <h3>Technical Skills</h3>
-        {Object.entries(formData.technicalSkills).map(([category, skills], index) => (
+        <h2 className="mt-5 mb-4">Technical Skills</h2>
+        {Object.entries(formData.technicalSkills || {}).map(([category, skills]) => (
           <Row key={category} className="mb-3">
             <Col md={6}>
-              <Form.Group>
-                <Form.Label>Skill Category</Form.Label>
-                <Form.Control type="text" value={category} onChange={(e) => handleChange(e, 'technicalSkills', category)} />
-              </Form.Group>
+              <Form.Control 
+                value={category} 
+                onChange={(e) => {
+                  const newCategory = e.target.value;
+                  setFormData(prev => ({
+                    ...prev,
+                    technicalSkills: {
+                      ...prev.technicalSkills,
+                      [newCategory]: prev.technicalSkills[category] || []
+                    }
+                  }));
+                }} 
+                placeholder="Skill category" 
+                isInvalid={!!errors[`technicalSkills.${category}`]} 
+              />
+              <Form.Control.Feedback type="invalid">{errors[`technicalSkills.${category}`]}</Form.Control.Feedback>
             </Col>
             <Col md={6}>
-              <Form.Group>
-                <Form.Label>Skills</Form.Label>
-                <Form.Control type="text" value={skills.join(', ')} onChange={(e) => handleChange(e, 'technicalSkills', category)} />
-              </Form.Group>
+              <Form.Control 
+                value={skills ? skills.join(', ') : ''} 
+                onChange={(e) => {
+                  const newSkills = e.target.value.split(',').map(skill => skill.trim());
+                  setFormData(prev => ({
+                    ...prev,
+                    technicalSkills: {
+                      ...prev.technicalSkills,
+                      [category]: newSkills
+                    }
+                  }));
+                }} 
+                placeholder="Skills (comma-separated)" 
+                isInvalid={!!errors[`technicalSkills.${category}`]} 
+              />
+              <Form.Control.Feedback type="invalid">{errors[`technicalSkills.${category}`]}</Form.Control.Feedback>
             </Col>
           </Row>
         ))}
 
-        <h3>Certifications</h3>
-        {formData.certifications.map((cert, index) => (
+        <h2 className="mt-5 mb-4">Certifications</h2>
+        {formData.certifications?.map((cert, index) => (
           <Row key={index} className="mb-3">
             <Col md={3}>
-              <Form.Group>
-                <Form.Label>Certification Name</Form.Label>
-                <Form.Control type="text" value={cert.name} onChange={(e) => handleChange(e, 'certifications', index, 'name')} />
-              </Form.Group>
+              <Form.Control value={cert.name || ''} onChange={(e) => handleChange(e, 'certifications', index, 'name')} placeholder="Certification name" isInvalid={!!errors[`certifications[${index}].name`]} />
+              <Form.Control.Feedback type="invalid">{errors[`certifications[${index}].name`]}</Form.Control.Feedback>
             </Col>
             <Col md={3}>
-              <Form.Group>
-                <Form.Label>Issuer</Form.Label>
-                <Form.Control type="text" value={cert.issuer} onChange={(e) => handleChange(e, 'certifications', index, 'issuer')} />
-              </Form.Group>
+              <Form.Control value={cert.issuer || ''} onChange={(e) => handleChange(e, 'certifications', index, 'issuer')} placeholder="Issuer" isInvalid={!!errors[`certifications[${index}].issuer`]} />
+              <Form.Control.Feedback type="invalid">{errors[`certifications[${index}].issuer`]}</Form.Control.Feedback>
             </Col>
             <Col md={3}>
-              <Form.Group>
-                <Form.Label>Date</Form.Label>
-                <Form.Control type="text" value={cert.date} onChange={(e) => handleChange(e, 'certifications', index, 'date')} />
-              </Form.Group>
+              <Form.Control value={cert.date || ''} onChange={(e) => handleChange(e, 'certifications', index, 'date')} placeholder="Date" isInvalid={!!errors[`certifications[${index}].date`]} />
+              <Form.Control.Feedback type="invalid">{errors[`certifications[${index}].date`]}</Form.Control.Feedback>
             </Col>
             <Col md={3}>
-              <Form.Group>
-                <Form.Label>Skills</Form.Label>
-                <Form.Control type="text" value={cert.skills.join(', ')} onChange={(e) => handleChange(e, 'certifications', index, 'skills')} />
-              </Form.Group>
+              <Form.Control value={cert.skills ? cert.skills.join(', ') : ''} onChange={(e) => handleChange(e, 'certifications', index, 'skills')} placeholder="Skills (comma-separated)" isInvalid={!!errors[`certifications[${index}].skills`]} />
+              <Form.Control.Feedback type="invalid">{errors[`certifications[${index}].skills`]}</Form.Control.Feedback>
             </Col>
           </Row>
         ))}
+        {errors.certifications && <div className="text-danger">{errors.certifications}</div>}
 
-        <h3>Education</h3>
-        {formData.education.map((edu, index) => (
+        <h2 className="mt-5 mb-4">Education</h2>
+        {formData.education?.map((edu, index) => (
           <Row key={index} className="mb-3">
             <Col md={6}>
-              <Form.Group>
-                <Form.Label>Degree</Form.Label>
-                <Form.Control type="text" value={edu.degree} onChange={(e) => handleChange(e, 'education', index, 'degree')} />
-              </Form.Group>
+              <Form.Control value={edu.degree || ''} onChange={(e) => handleChange(e, 'education', index, 'degree')} placeholder="Degree" isInvalid={!!errors[`education[${index}].degree`]} />
+              <Form.Control.Feedback type="invalid">{errors[`education[${index}].degree`]}</Form.Control.Feedback>
             </Col>
             <Col md={6}>
-              <Form.Group>
-                <Form.Label>Institution</Form.Label>
-                <Form.Control type="text" value={edu.institution} onChange={(e) => handleChange(e, 'education', index, 'institution')} />
-              </Form.Group>
+              <Form.Control value={edu.institution || ''} onChange={(e) => handleChange(e, 'education', index, 'institution')} placeholder="Institution" isInvalid={!!errors[`education[${index}].institution`]} />
+              <Form.Control.Feedback type="invalid">{errors[`education[${index}].institution`]}</Form.Control.Feedback>
             </Col>
           </Row>
         ))}
+        {errors.education && <div className="text-danger">{errors.education}</div>}
 
+        <h2 className="mt-5 mb-4">Languages</h2>
         <Form.Group className="mb-3">
-          <Form.Label>Languages</Form.Label>
-          <Form.Control type="text" value={formData.languages.join(', ')} onChange={(e) => handleChange(e, 'languages')} />
+          <Form.Control
+            value={formData.languages ? formData.languages.join(', ') : ''}
+            onChange={(e) => {
+              const newLanguages = e.target.value.split(',').map(lang => lang.trim());
+              setFormData(prev => ({ ...prev, languages: newLanguages }));
+            }}
+            placeholder="Languages (comma-separated)"
+            isInvalid={!!errors.languages}
+          />
+          <Form.Control.Feedback type="invalid">{errors.languages}</Form.Control.Feedback>
         </Form.Group>
 
-        <Button variant="primary" type="submit">Save Resume</Button>
+        <Button variant="primary" type="submit" className="mt-4">Save Resume</Button>
       </Form>
     </Container>
   );
